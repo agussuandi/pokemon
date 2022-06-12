@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import PokemonBox from '../../components/PokemonBox'
 
-export default function Home()
+import { PokemonConsumer } from '../../context/PokemonProvider'
+
+function Home(props)
 {
     const [pokemons, setPokemons]       = useState([])
     const [loadPokemon, setLoadPokemon] = useState('https://pokeapi.co/api/v2/pokemon?limit=21')
@@ -32,12 +34,14 @@ export default function Home()
             <div className="max-w-2xl mx-auto py-16 sm:py-24 lg:py-32 lg:max-w-none">
                 <h2 className="text-2xl font-extrabold text-gray-900">Pokemon</h2>
                 <div className="mt-6 space-y-12 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-x-6">
-                    {pokemons.map((pokemon) => (
+                    {pokemons.map((pokemon, i) => (
                         <PokemonBox
                             id={pokemon.id}
-                            key={pokemon.id}
+                            key={i}
                             image={pokemon.sprites.other.dream_world.front_default}
                             name={pokemon.name}
+                            contextProps={props}
+                            pokemon={pokemon}
                         />
                     ))}
                 </div>
@@ -54,3 +58,5 @@ export default function Home()
         </div>
     )
 }
+
+export default PokemonConsumer(Home)

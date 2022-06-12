@@ -5,7 +5,9 @@ import { useParams, useNavigate } from 'react-router-dom'
 import MobileMenu from '../../layouts/MobileMenu'
 import DesktopMenu from '../../layouts/DesktopMenu'
 
-export default function PokemonDetail()
+import { PokemonConsumer } from '../../context/PokemonProvider'
+
+function PokemonDetail(props)
 {
     const { name } = useParams(); 
     const navigate = useNavigate();
@@ -83,6 +85,13 @@ export default function PokemonDetail()
                                     >
                                         Back to Home
                                     </button>
+                                    <button
+                                        type="submit"
+                                        className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-500 md:bg-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ml-2"
+                                        onClick={() => props.dispatch({type: 'addPokemon', pokemon: pokemon})}
+                                    >
+                                        Add to Favorite
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -92,3 +101,5 @@ export default function PokemonDetail()
         </div>
     )
 }
+
+export default PokemonConsumer(PokemonDetail)
