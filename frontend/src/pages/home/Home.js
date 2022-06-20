@@ -1,26 +1,31 @@
 import React, { useEffect, useState } from 'react'
 import PokemonBox from '../../components/PokemonBox'
 
+import { searchQueryString } from '../../helpers/helperApp'
 import { PokemonConsumer } from '../../context/PokemonProvider'
 
 function Home(props)
 {
+    const URI_API = 'http://localhost:4000/api/v1'
     const [pokemons, setPokemons]       = useState([])
-    const [loadPokemon, setLoadPokemon] = useState('https://pokeapi.co/api/v2/pokemon?limit=21')
+    const [loadPokemon, setLoadPokemon] = useState(`${URI_API}/pokemon?limit=21`)
 
     const getPokemons = async () => {
         const resPokemons = await fetch(loadPokemon)
         const dataPokemon = await resPokemons.json()
+        
+        const limit  = await searchQueryString('limit', dataPokemon.data.next)
+        const offset = await searchQueryString('offset', dataPokemon.data.next)
 
-        setLoadPokemon(dataPokemon.next)
-        createPokemonObject(dataPokemon.results)
+        setLoadPokemon(`${URI_API}/pokemon?limit=${limit}&offset=${offset || 21}`)
+        createPokemonObject(dataPokemon.data.results)
     }
 
     const createPokemonObject = results => {
         results.forEach( async pokemon => {
-            const resPokemons = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon.name}`)
+            const resPokemons = await fetch(`${URI_API}/pokemon/${pokemon.name}`)
             const dataPokemon = await resPokemons.json()
-            setPokemons(currentPokemons => [...currentPokemons, dataPokemon])
+            setPokemons(currentPokemons => [...currentPokemons, dataPokemon.data])
             pokemons.sort((a, b) => a.id - b.id)
         })
     }
@@ -35,14 +40,15 @@ function Home(props)
                 <h2 className="text-2xl font-extrabold text-gray-900">Pokemon</h2>
                 <div className="mt-6 space-y-12 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-x-6">
                     {pokemons.map((pokemon, i) => (
-                        <PokemonBox
-                            id={pokemon.id}
-                            key={i}
-                            image={pokemon.sprites.other.dream_world.front_default}
-                            name={pokemon.name}
-                            contextProps={props}
-                            pokemon={pokemon}
-                        />
+                        <div key={i}>
+                            <PokemonBox
+                                id={pokemon.id}
+                                image={pokemon.sprites.other.dream_world.front_default}
+                                name={pokemon.name}
+                                contextProps={props}
+                                pokemon={pokemon}
+                            />
+                        </div>
                     ))}
                 </div>
                 <div className="mt-5">
