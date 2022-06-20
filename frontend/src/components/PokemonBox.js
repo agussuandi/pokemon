@@ -2,7 +2,31 @@ import { useNavigate } from 'react-router-dom';
 
 export default function PokemonBox({ id, key, image, name, contextProps, pokemon })
 {
+    const URI_API  = 'http://localhost:4000/api/v1'
     const navigate = useNavigate()
+
+    const catchPokemon = () => {
+        fetch(`${URI_API}/pokemon`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: {},
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status) {
+                contextProps.dispatch({type: 'addPokemon', pokemon: pokemon})
+                alert('Success catch Pokemon')
+            }
+            else {
+                alert('Failed catch Pokemon')
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error.message);
+        })
+    }
 
     return (
         <>
@@ -15,7 +39,7 @@ export default function PokemonBox({ id, key, image, name, contextProps, pokemon
                         onClick={() => navigate(`/${name}`)}
                     />
                 </div>
-                <p className="text-base font-semibold text-gray-900">{name} | <span style={{cursor: 'pointer'}} onClick={() => contextProps.dispatch({type: 'addPokemon', pokemon: pokemon})}>Add to Favorite</span></p>
+                <p className="text-base font-semibold text-gray-900">{name} | <span style={{cursor: 'pointer'}} onClick={() => catchPokemon()}>Add to Favorite</span></p>
             </div>
         </>
     )
